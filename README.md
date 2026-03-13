@@ -12,7 +12,7 @@ L'obiettivo del progetto è promuovere un **uso consapevole dell'energia** attra
 
 # Architettura del Sistema
 
-Il progetto implementa il paradigma **Produttore – Consumatore**.
+Il progetto implementa il paradigma **Produttore - Consumatore**.
 
 ### Produttore
 
@@ -151,7 +151,7 @@ documentazione del progetto
 Clonare il repository:
 
 ```
-git clone https://github.com/tuo-username/nome-repository.git
+git clone https://github.com/Alt-Musiab/Progetto_DHT11.git
 ```
 
 Installare le dipendenze:

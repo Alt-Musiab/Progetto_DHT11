@@ -1,66 +1,186 @@
-# Gruppo :
-- Butt Mohammad Musiab
-- Musaku Kevin
-- Bussi Lorenzo
+# Sistema di Monitoraggio Ambientale con Arduino e Python
 
-## Sistema di Monitoraggio per l'Efficienza Energetica
+## UdA - Sostenibilità Ambientale (TSPIT)
 
-Il nostro progetto crea un sistema completo per monitorare la temperatura e l'umidità all'interno di un ambiente. L'obiettivo è quello di aiutare a ridurre i consumi energetici e promuovere comportamenti più sostenibili attraverso l'analisi dei dati raccolti.
+Questo progetto realizza un sistema di **monitoraggio ambientale** capace di rilevare **temperatura e umidità** attraverso un sensore **DHT11** collegato ad **Arduino**.
 
-### Architettura del Sistema
+I dati raccolti vengono inviati tramite **comunicazione seriale** a un'applicazione **Python** che li elabora, li visualizza in **tempo reale** tramite interfaccia grafica e li salva in uno **storico CSV** per analisi successive.
 
-Il nostro sistema si basa sul paradigma Produttore-Consumatore.
+L'obiettivo del progetto è promuovere un **uso consapevole dell'energia** attraverso l'analisi dei parametri ambientali interni.
 
-- **Produttore (Arduino):** utilizza sensori fisici (DHT11) per raccogliere dati sulla temperatura e l'umidità e li trasforma in segnali digitali.
+---
 
-- **Consumatore (Python):** elabora i dati, li salva in un file CSV e li visualizza in tempo reale tramite un'interfaccia grafica (Dear PyGui).
+# Architettura del Sistema
 
-### Relazione Tecnica: Strategie di Sincronizzazione
+Il progetto implementa il paradigma **Produttore – Consumatore**.
 
-La sincronizzazione tra i processi è fondamentale per il nostro progetto. Abbiamo adottato tre strategie principali:
+### Produttore
 
-1. **Codifica Senza Blocchi (Delay-less Coding):**
+Arduino legge i dati dal sensore DHT11 e li invia periodicamente al computer tramite **porta seriale**.
 
-- Abbiamo usato la funzione millis() al posto del classico delay() per evitare che l'unità di acquisizione si “congeli” durante l'attesa del campionamento.
+### Consumatori
 
-- Funzionamento: Arduino controlla se sono trascorsi 2 secondi; se sì, esegue la lettura e invia i dati, altrimenti continua il loop.
+L'applicazione Python riceve ed elabora i dati attraverso:
 
-2. **Gestione dei Thread (Multithreading):**
+* **Thread di lettura seriale**
+* **Coda (queue) come buffer**
+* **Interfaccia grafica in Dear PyGui**
 
-- L'applicazione Python è articolata su thread separati per evitare rallentamenti della GUI:
+Questo permette di evitare blocchi dell'interfaccia e garantire la sincronizzazione tra i processi.
 
-- **Thread di Lettura:** monitora la porta seriale in background.
+---
 
-- **Thread Principale (GUI):** gestisce il rendering del grafico e l'interazione con l'utente.
+# Hardware Utilizzato
 
-3. **Buffer di Memoria e Code (Queue):**
+* Arduino
+* Sensore **DHT11**
+* LED Blu
+* LED Verde
+* LED Rosso
+* Resistenze
+* Breadboard
+* Cavi jumper
 
-- La comunicazione tra il thread di lettura e la GUI avviene tramite una coda che funge da buffer.
+---
 
-- Sincronizzazione: i dati vengono “parcheggiati” nella coda e prelevati dalla GUI quando è pronta.
+# Logica dei LED
 
-- Integrità: previene la perdita di pacchetti dati in caso di picchi di carico della CPU o rallentamenti grafici.
+I LED indicano lo stato ambientale in base alla temperatura:
 
-### Feedback Hardware e Suggerimenti Utente
+| Stato        | Temperatura | Significato                 |
+| ------------ | ----------- | --------------------------- |
+| 🔵 LED Blu   | < 18°C      | Ambiente freddo             |
+| 🟢 LED Verde | 18°C – 25°C | Comfort energetico          |
+| 🔴 LED Rosso | > 25°C      | Possibile spreco energetico |
 
-Il sistema fornisce feedback tramite LED fisici e indicatori testuali sulla dashboard:
+---
 
-- **Stato LED / Soglia Temperatura / Suggerimento GUI:**
+# Comunicazione Serial
 
-- **Freddo/Stand-by:** 🔵 Blu / < 18°C / “Temperatura bassa: isolare l'ambiente"
+Arduino invia i dati nel formato:
 
-- **Comfort/Eco:** 🟢 Verde / 18°C - 25°C / “Efficienza energetica ottimale"
+```
+temperatura,umidità
+```
 
-- **Alert/Critico:** 🔴 Rosso / > 25°C / “Riscaldamento eccessivo: aprire le finestre"
+Esempio:
 
-### Gestione Dati
+```
+22.4,56
+```
 
-Il sistema effettua un campionamento periodico e salva ogni misura in un file `monitoraggio_energetico.csv` con le seguenti colonne:
+Ogni pacchetto termina con **newline** per permettere la sincronizzazione della lettura.
 
-- **timestamp:** Orario esatto della rilevazione.
+---
 
-- **temperatura:** Valore in gradi Celsius.
+# Funzionalità dell'Applicazione Python
 
-- **umidità:** Valore percentuale.
+L'applicazione desktop realizzata con **Dear PyGui** permette di:
 
-Questo storico permette un'analisi a lungo termine del microclima interno per identificare sprechi energetici ricorrenti.
+* visualizzare **temperatura e umidità in tempo reale**
+* mostrare **messaggi di stato energetico**
+* visualizzare **grafico della temperatura**
+* salvare automaticamente i dati in un file **CSV**
+
+---
+
+# Campionamento Dati
+
+I dati vengono acquisiti a intervalli regolari e salvati in un file CSV con la seguente struttura:
+
+| timestamp | temperatura | umidità |
+| --------- | ----------- | ------- |
+
+Esempio:
+
+```
+12:30:05,22.4,56
+12:30:07,22.6,55
+```
+
+Questo consente di mantenere uno **storico delle misurazioni** per analisi successive.
+
+---
+
+# Tecniche di Sincronizzazione Utilizzate
+
+Per garantire il corretto funzionamento del sistema sono state utilizzate diverse tecniche:
+
+### millis() su Arduino
+
+Permette di eseguire il campionamento senza utilizzare `delay()` evitando il blocco del microcontrollore.
+
+### Threading in Python
+
+La lettura della porta seriale avviene su **un thread separato** per non rallentare l'interfaccia grafica.
+
+### Queue (Buffer)
+
+I dati ricevuti vengono inseriti in una **coda condivisa** tra:
+
+* thread di comunicazione seriale
+* logica dell'interfaccia grafica
+
+Questo implementa il paradigma **Produttore-Consumatore**.
+
+---
+
+# Struttura del Repository
+
+```
+arduino/
+codice Arduino per la lettura del sensore e gestione dei LED
+
+python/
+applicazione Python con GUI e gestione dati
+
+data/
+file CSV di esempio
+
+requirements.txt
+librerie Python necessarie
+
+README.md
+documentazione del progetto
+```
+
+---
+
+# Installazione
+
+Clonare il repository:
+
+```
+git clone https://github.com/tuo-username/nome-repository.git
+```
+
+Installare le dipendenze:
+
+```
+pip install -r requirements.txt
+```
+
+---
+
+# Obiettivo Didattico
+
+Il progetto dimostra l'integrazione tra:
+
+* sistemi **embedded**
+* **comunicazione seriale**
+* **programmazione concorrente**
+* **visualizzazione dati**
+
+per realizzare un sistema di **monitoraggio ambientale intelligente**.
+
+---
+
+# Autori
+
+Progetto sviluppato da:
+
+* **Butt Mohammad Musiab**
+* **Musaku Kevin**
+* **Bussi Lorenzo**
+
+per la materia **TSPIT**.

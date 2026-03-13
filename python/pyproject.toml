@@ -1,7 +1,7 @@
 [project]
-name = "arduino-demo"
+name = "monitoraggio_energetico"
 version = "0.1.0"
-description = "Add your description here"
+description = "Monitoraggio Ambientale con Arduino e Python - UdA – Sostenibilità Ambientale"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

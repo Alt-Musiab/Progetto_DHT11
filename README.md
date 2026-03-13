@@ -50,7 +50,7 @@ I LED indicano lo stato ambientale in base alla temperatura:
 | Stato        | Temperatura | Significato                 |
 | ------------ | ----------- | --------------------------- |
 | 🔵 LED Blu   | < 18°C      | Ambiente freddo             |
-| 🟢 LED Verde | 18°C – 25°C | Comfort energetico          |
+| 🟢 LED Verde | 18°C - 25°C | Comfort energetico          |
 | 🔴 LED Rosso | > 25°C      | Possibile spreco energetico |
 
 ---
@@ -137,7 +137,7 @@ applicazione Python con GUI e gestione dati
 data/
 file CSV di esempio
 
-requirements.txt
+requisiti.txt
 librerie Python necessarie
 
 README.md

@@ -1,6 +1,6 @@
 # Sistema di Monitoraggio Ambientale con Arduino e Python
 
-## UdA - Sostenibilità Ambientale (TSPIT)
+## UdA - Sostenibilità Ambientale
 
 Questo progetto realizza un sistema di **monitoraggio ambientale** capace di rilevare **temperatura e umidità** attraverso un sensore **DHT11** collegato ad **Arduino**.
 
@@ -181,6 +181,4 @@ Progetto sviluppato da:
 
 * **Butt Mohammad Musiab**
 * **Musaku Kevin**
-* **Bussi Lorenzo**
-
-per la materia **TSPIT**.
+* **Bussi Lorenzo**.
